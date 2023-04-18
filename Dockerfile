@@ -5,7 +5,7 @@ FROM python:3.7.2
 WORKDIR /app
 
 # Copy the requirements file to container workspace
-COPY requirements.txt .
+COPY . .
 
 # Update packages inside container (Debian distribuition)
 RUN apt-get update && apt-get install -y nano curl

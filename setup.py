@@ -1,13 +1,19 @@
-with open("env.eniac", "r") as f:
-    data = f.readlines()
 
-nome = None
-idade = None
+import time
+from .view.SplashScreen import SplashScreen
 
-for line in data:
-    if "nome" in line:
-        nome = line.split("=")[1].strip()
-    elif "idade" in line:
-        idade = line.split("=")[1].strip()
+from config.database.Connection import ConexaoMySQL
+from config.database.validations.CheckDatabase import CheckDatabase 
 
-print(f"A pessoa tem {idade} anos e se chama {nome}")
+
+SplashScreen.show()
+
+
+
+#dbCheck = CheckDatabase
+
+# Apresentação da splash
+
+#dbCheck.checkDatabase()
+# conexao = ConexaoMySQL()
+# print(conexao.connect())

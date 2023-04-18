@@ -4,3 +4,4 @@ websocket-client==0.56
 pandas
 numpy
 colorama
+mysql.connector

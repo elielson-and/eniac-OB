@@ -1,8 +1,10 @@
 version: '3.9'
 
 services:
-  eniacbot:
+  python:
     build: 
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - .:/app
     tty: true # Allows acess bash of machine
