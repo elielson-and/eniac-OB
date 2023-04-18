@@ -1,18 +1,15 @@
 
 import time
-from .view.SplashScreen import SplashScreen
+from view.SplashScreen import SplashScreen
 
-from config.database.Connection import ConexaoMySQL
-from config.database.validations.CheckDatabase import CheckDatabase 
+# from config.database.Connection import ConexaoMySQL
+# from config.database.validations.CheckDatabase import CheckDatabase 
 
 
 SplashScreen.show()
 
+#Run application Checkers here
 
-
-#dbCheck = CheckDatabase
-
-# Apresentação da splash
 
 #dbCheck.checkDatabase()
 # conexao = ConexaoMySQL()
