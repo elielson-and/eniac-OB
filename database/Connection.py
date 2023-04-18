@@ -31,18 +31,21 @@ class ConexaoMySQL:
     # Open connection
     def connect(self):
         try:
-            ConexaoMySQL.connection = mysql.connector.connect(
+            self.connection = mysql.connector.connect(
                 host=self.host,
-                database=self.dbname,
                 user=self.user,
-                passwd=self.passwd
+                password=self.passwd,
+                database=self.dbname
             )
-            if self.connection.is_connected():
-                os.system('cls||clear')
-                return Message.success("Base de dados conectada!")
-        except mysql.connector.Error as error:
-            os.system('cls||clear')
-            return Message.danger("Erro ao conectar à base de dados! Detalhamento: \n {}".format(error))
+            return True
+        except mysql.connector.Error as e:
+            return False
+    
+    def check_db_connection(self):
+        if self.connection is not None:
+            return True
+        else:
+            return False
         
     # Consult
     def consult(self, query): # This one returns a value

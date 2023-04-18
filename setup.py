@@ -1,16 +1,11 @@
 
 import time
 from view.SplashScreen import SplashScreen
-
-# from config.database.Connection import ConexaoMySQL
-# from config.database.validations.CheckDatabase import CheckDatabase 
-
+from app.Checkers.Checker import Checker
+from database.Connection import ConexaoMySQL
 
 SplashScreen.show()
 
 #Run application Checkers here
 
-
-#dbCheck.checkDatabase()
-# conexao = ConexaoMySQL()
-# print(conexao.connect())
+checker = Checker()
