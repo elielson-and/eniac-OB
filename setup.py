@@ -3,9 +3,10 @@ import time
 from view.SplashScreen import SplashScreen
 from app.Checkers.Checker import Checker
 from database.Connection import ConexaoMySQL
+import curses
 
 SplashScreen.show()
 
-#Run application Checkers here
-
+# Running checkers before start
 checker = Checker()
+
