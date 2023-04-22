@@ -3,7 +3,7 @@ import sys
 import os
 from database.Connection import ConexaoMySQL
 from view.Messages import Message
-import requests
+
 from iqoptionapi.stable_api import IQ_Option
 
 class Checker:
@@ -16,9 +16,9 @@ class Checker:
         self.check_project_files()
         self.check_db_connection()
         self.check_iqoption_api()
-        #print("\n" + Message.success("AUTO-TESTE FINALIZADO! PROSSEGUINDO...")) 
-        # time.sleep(2)
-        # os.system('cls||clear')
+        print("\n" + Message.success("AUTO-TESTE FINALIZADO! PROSSEGUINDO...")) 
+        time.sleep(2)
+        os.system('cls||clear')
 
     def check_project_files(self):
         print(Message.info("Verificando integridade dos arquivos...")) 
@@ -46,7 +46,9 @@ class Checker:
         
 
     def check_iqoption_api(self):
-
+        print(Message.info("Conectando-se à API IQOption...")) 
+        # self.email = ""
+        # self.passwd = ""
         with open("./env.eniac", "r") as f:
             data = f.readlines()
 
@@ -57,11 +59,9 @@ class Checker:
                     self.passwd = line.split("=")[1].strip()
 
         iqoption = IQ_Option(self.email, self.passwd)
-        check = iqoption.connect()
-        if check:
-            print(Message.success("API IQoption conectada!")) 
+        check,reason = iqoption.connect()
+        if (check):
+            print("Conectado")
         else:
-            print(Message.danger("Não foi possível se conectar a API IQOption \n verifique as credenciais no arquivo (env.eniac) e tente novamente.")) 
-            sys.exit()
-
-
+            print("Erro")
+        sys.exit()
