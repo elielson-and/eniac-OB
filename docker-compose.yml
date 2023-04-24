@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  python:
+  eniacbot:
     build: 
       context: .
       dockerfile: Dockerfile
