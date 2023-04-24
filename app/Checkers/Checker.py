@@ -64,4 +64,4 @@ class Checker:
             print("Conectado")
         else:
             print("Erro")
-        sys.exit()
+            sys.exit()
