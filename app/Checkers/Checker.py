@@ -12,7 +12,6 @@ class Checker:
         print(Message.info("Iniciando auto-teste de integridade do ambiente..."))
         time.sleep(2)
         os.system('cls||clear')
-        
         self.check_project_files()
         self.check_db_connection()
         self.check_iqoption_api()
@@ -47,8 +46,6 @@ class Checker:
 
     def check_iqoption_api(self):
         print(Message.info("Conectando-se à API IQOption...")) 
-        # self.email = ""
-        # self.passwd = ""
         with open("./env.eniac", "r") as f:
             data = f.readlines()
 

@@ -13,37 +13,38 @@ class Runner:
         print("Chegou aqui")
         sys.exit()
         
+        # -------- Ainda não testado até o momento desta branch
 
-        asset = "AUDJPY"
-        timeframe = 5
+        # asset = "AUDJPY"
+        # timeframe = 5
 
-        # Obtendo os últimos 10 candles
-        candles = self.api.get_candles(asset, timeframe * 60, 100, time.time())
-        candles_list = candles
+        # # Obtendo os últimos 10 candles
+        # candles = self.api.get_candles(asset, timeframe * 60, 100, time.time())
+        # candles_list = candles
 
-        print("\n Obtendo últimas 100 velas... \n")
-        time.sleep(1)
-        # Obtendo a cor de cada candle
-        qtdVermelhas = 0
-        qtdverdes = 0
+        # print("\n Obtendo últimas 100 velas... \n")
+        # time.sleep(1)
+        # # Obtendo a cor de cada candle
+        # qtdVermelhas = 0
+        # qtdverdes = 0
 
-        for candle in candles_list:
-            candle_open = candle["open"]
-            candle_close = candle["close"]
-            if candle_open < candle_close:
-                print( "verde" )
-                qtdverdes +=1
-            elif candle_open > candle_close:
-                print("vermelho" )
-                qtdVermelhas +=1 
-            else:
-                print("DOGE")
-            time.sleep(0.1)
+        # for candle in candles_list:
+        #     candle_open = candle["open"]
+        #     candle_close = candle["close"]
+        #     if candle_open < candle_close:
+        #         print( "verde" )
+        #         qtdverdes +=1
+        #     elif candle_open > candle_close:
+        #         print("vermelho" )
+        #         qtdVermelhas +=1 
+        #     else:
+        #         print("DOGE")
+        #     time.sleep(0.1)
 
-        operacao = ''
-        if qtdVermelhas > qtdverdes:
-            operacao = "CALL"
-        else:
-            operacao = "PUT"
+        # operacao = ''
+        # if qtdVermelhas > qtdverdes:
+        #     operacao = "CALL"
+        # else:
+        #     operacao = "PUT"
 
-        print("\n operação sugerida: " + operacao )
+        # print("\n operação sugerida: " + operacao )
