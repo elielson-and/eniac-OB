@@ -15,8 +15,8 @@ class Checker:
         self.check_project_files()
         self.check_db_connection()
         self.check_iqoption_api()
-        print("\n" + Message.success("AUTO-TESTE FINALIZADO! PROSSEGUINDO...")) 
-        time.sleep(2)
+        print("\n" + Message.success(" AUTO-TESTE FINALIZADO! ")) 
+        #time.sleep(2)
         os.system('cls||clear')
 
     def check_project_files(self):
@@ -58,7 +58,7 @@ class Checker:
         iqoption = IQ_Option(self.email, self.passwd)
         check,reason = iqoption.connect()
         if (check):
-            print("Conectado")
+            print(Message.success("Conexão estabelecida com a corretora!"))
         else:
             print("Erro")
             sys.exit()
