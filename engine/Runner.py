@@ -2,7 +2,7 @@ import time
 import sys
 from iqoptionapi.stable_api import IQ_Option
 from app.Requerements.Volatility import Volatility
-from app.Requerements.Chart import Chart 
+from app.Controller.Chart import Chart 
 from engine.Asset import Asset
 
 class Runner:
@@ -12,28 +12,24 @@ class Runner:
 
         #------- Operational variables --------
         self.available_assets = {}
-        self.current_chart_trending = ""
-
-
-
-
-
-
+        self.chart_volatility = ""
+        self.is_chart_laterialized = False
+        self.chart_trending = ""
+        #------- Trade execution variables --------
 
 
     def start_application(self):
-        # Verificar os ativos disponíveis no momento
+        #---Instances---
+        chart = Chart(self.api)
 
-        # Verificar volatilidade
-        # volatility = Volatility(self.api)
-        # volatility.is_volatility_high()
+        self.available_assets = chart.get_all_available_assets()            # Array
+        self.chart_volatility = chart.is_high_volatility()                  # String
+        self.is_chart_laterialized = chart.is_asset_chart_lateralized()     # Bool
+        self.chart_trending = chart.get_chart_trend()                       # String
 
         
-        avr = Chart(self.api)
-        # avr.check_trend()
-        # avr.get_all_available_assets()
-        # avr.is_eurusd_market_lateralized()
-        avr.check_volatility()
+     
+        
 
 
        
