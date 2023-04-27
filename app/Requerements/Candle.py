@@ -30,22 +30,31 @@ class Candle:
             print("tendência de alta")
         else:
             print("tendência de baixa")
-            
+
 
     def get_all_available_assets(self):
+        #----------------------------------------------------------------
         # Busca os ativos disponíveis que não estão em OTC
+        # Filtra os ativos disponíveis no momento e retorna apenas 
+        # os que de fato estão na lista de permitidos para operar no bot
+        #----------------------------------------------------------------
         assets = self.api.get_all_profit()
-
-        # Filtra os ativos para incluir apenas os que estão na sua lista de ativos aceitos
         filtered_assets = {}
         for asset in assets:
             if asset in ["EURUSD", "EURGBP", "EURJPY", "GBPUSD", "AUDCAD", "AUDUSD", "GBPJPY", "USDJPY", "AUDJPY"]:
                 filtered_assets[asset] = assets[asset]
 
-        json_formatado = json.dumps(filtered_assets, indent=2)
+        # Ordena os ativos por payout em ordem decrescente
+        sorted_assets = sorted(filtered_assets.items(), key=lambda x: x[1]["turbo"], reverse=True)
+
+        # Cria um novo dicionário com os ativos ordenados
+        ordered_assets = {}
+        for asset in sorted_assets:
+            ordered_assets[asset[0]] = asset[1]
+
+        json_formatado = json.dumps(ordered_assets, indent=2)
 
         # Imprime o resultado
         print(json_formatado)
-
 
    
