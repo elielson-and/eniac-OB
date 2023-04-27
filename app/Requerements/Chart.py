@@ -1,8 +1,9 @@
 import time
 import sys
 import json
+import datetime
 
-class Candle:
+class Chart:
     def __init__(self, api) -> None:
         self.api = api
 
@@ -56,5 +57,42 @@ class Candle:
 
         # Imprime o resultado
         print(json_formatado)
+        
 
-   
+    def is_eurusd_market_lateralized(self):
+        # Define o horário atual como o horário de término dos candles
+        endtime = int(datetime.datetime.now().timestamp())
+
+        # Obtém os últimos 20 candles do ativo EURUSD
+        candles = self.api.get_candles("EURUSD", 60*5, endtime, 20)
+
+        # Calcula a variação entre o preço de abertura e fechamento de cada candle
+        price_changes = []
+        for candle in candles:
+            price_changes.append(abs(candle["close"] - candle["open"]))
+
+        # Verifica se há pelo menos um candle na lista de preços
+        if len(price_changes) > 0:
+            # Calcula a média da variação de preços
+            average_change = sum(price_changes) / len(price_changes)
+            print( average_change < 0.001 )
+        else:
+            # Caso não haja nenhum candle, retorna False
+            print( False)
+
+    
+    def check_volatility(self):
+        pair = 'EURUSD'
+        candles = self.api.get_candles(pair, 5 * 60, 30, time.time())
+        
+        volatility = []
+        for candle in candles:
+            diff = candle['open'] - candle['close']
+            volatility.append(abs(diff))
+
+        average_volatility = sum(volatility) / len(volatility)
+        if average_volatility > 0.001:
+            print("O mercado está volátil.")
+        else:
+            print("O mercado não está volátil.")
+            
