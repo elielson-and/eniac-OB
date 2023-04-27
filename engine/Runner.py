@@ -14,11 +14,13 @@ class Runner:
         # Verificar os ativos disponíveis no momento
 
         # Verificar volatilidade
-        volatility = Volatility(self.api)
-        volatility.is_volatility_high()
+        # volatility = Volatility(self.api)
+        # volatility.is_volatility_high()
+
         
         avr = Candle(self.api)
-        avr.check_trend()
+        # avr.check_trend()
+        avr.get_all_available_assets()
 
 
        
