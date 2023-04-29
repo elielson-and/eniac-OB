@@ -2,6 +2,7 @@ import time
 import sys
 import json
 import datetime
+from view.Messages import Message
 
 class Chart:
     def __init__(self, api) -> None:
@@ -12,6 +13,9 @@ class Chart:
     # Get all available assets 
     #------------------------------ 
     def get_all_available_assets(self):
+
+        print(Message.info("Obtendo lista de ativos disponíveis..."))
+
         assets = self.api.get_all_profit()
         filtered_assets = {}
         for asset in assets:
@@ -29,14 +33,18 @@ class Chart:
         json_formatado = json.dumps(ordered_assets, indent=2)
 
         # Imprime o resultado
-        print(json_formatado)
+        return json_formatado
+    
+
+
+
 
     #------------------------------ 
     # Check if volatility is high
     #------------------------------ 
-    def is_high_volatility(self):
-        pair = 'EURUSD'
-        candles = self.api.get_candles(pair, 5 * 60, 30, time.time())
+    def is_high_volatility(self, asset, expiration_time):
+        pair = asset
+        candles = self.api.get_candles(pair, expiration_time * 60, 30, time.time())
         
         volatility = []
         for candle in candles:
@@ -45,19 +53,27 @@ class Chart:
 
         average_volatility = sum(volatility) / len(volatility)
         if average_volatility > 0.001:
-            print("O mercado está volátil.")
+            print("Alta volatilidade")
+            return True
         else:
-            print("O mercado não está volátil.")
+            print("Baixa volatilidade")
+            return False
+
+
+
+
+
     
     #-------------------------------------
     #  Check if the market is lateralized
     #-------------------------------------
-    def is_asset_chart_lateralized(self):
+    def is_asset_chart_lateralized(self, asset, expiration_time):
+        num_candles_behind = 20
         # Define o horário atual como o horário de término dos candles
         endtime = int(datetime.datetime.now().timestamp())
 
         # Obtém os últimos 20 candles do ativo EURUSD
-        candles = self.api.get_candles("EURUSD", 60*5, endtime, 20)
+        candles = self.api.get_candles(asset, 60 * expiration_time, endtime, num_candles_behind)
 
         # Calcula a variação entre o preço de abertura e fechamento de cada candle
         price_changes = []
@@ -70,16 +86,20 @@ class Chart:
             average_change = sum(price_changes) / len(price_changes)
             print( average_change < 0.001 )
         else:
+            
             # Caso não haja nenhum candle, retorna False
             print( False)
+
+
+
 
 
     #------------------------------ 
     #  Get chart trend, up or down
     #------------------------------ 
-    def get_chart_trend(self, asset = "EURUSD", expiration_time = 5):
+    def get_chart_trend(self, asset , expiration_time ):
         # Define o período de 5 minutos
-        period = 5 * 60
+        period = expiration_time * 60
         
         # Define o intervalo de tempo a ser verificado
         end_time = time.time()
@@ -102,8 +122,13 @@ class Chart:
             print("tendência de baixa")
 
     
-        
-    
+
+
+    def is_acceptable_payout(self,payout):
+        if(payout >= 0.80):
+            return True
+        else:
+            return False
 
     
     

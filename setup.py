@@ -6,5 +6,6 @@ from engine.Runner import Runner
 # SplashScreen.show()
 checker = Checker()
 
+
 rn = Runner()
 rn.start_application()

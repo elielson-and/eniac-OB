@@ -3,7 +3,7 @@ import sys
 import os
 from database.Connection import ConexaoMySQL
 from view.Messages import Message
-
+from config.Environment.Environment import Environment
 from iqoptionapi.stable_api import IQ_Option
 
 class Checker:
@@ -16,7 +16,7 @@ class Checker:
         self.check_db_connection()
         self.check_iqoption_api()
         print("\n" + Message.success(" AUTO-TESTE FINALIZADO! ")) 
-        #time.sleep(2)
+        time.sleep(2)
         os.system('cls||clear')
 
     def check_project_files(self):
@@ -46,19 +46,11 @@ class Checker:
 
     def check_iqoption_api(self):
         print(Message.info("Conectando-se à API IQOption...")) 
-        with open("./env.eniac", "r") as f:
-            data = f.readlines()
-
-            for line in data:
-                if "IQOPTION_EMAIL" in line:
-                    self.email = line.split("=")[1].strip()
-                elif "IQOPTION_PASSWORD" in line:
-                    self.passwd = line.split("=")[1].strip()
-
-        iqoption = IQ_Option(self.email, self.passwd)
-        check,reason = iqoption.connect()
-        if (check):
+        api = IQ_Option(Environment.get_user_credentials())
+        api.connect()
+        if (api.check_connect()): # se retornar true conectou
+            print(f"API Version: {IQ_Option.__version__}")
             print(Message.success("Conexão estabelecida com a corretora!"))
         else:
-            print("Erro")
+            print(Message.danger("Ocorreu um erro ao se conectar com a corretora, verifique as credenciais."))
             sys.exit()

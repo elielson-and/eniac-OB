@@ -14,6 +14,7 @@ from iqoptionapi.expiration import get_expiration_time, get_remaning_time
 from iqoptionapi.version_control import api_version
 from datetime import datetime, timedelta
 from random import randint
+from config.Environment.Environment import Environment
 
 
 def nested_dict(n, type):
@@ -26,11 +27,11 @@ def nested_dict(n, type):
 class IQ_Option:
     __version__ = api_version
 
-    def __init__(self, email, password, active_account_type="PRACTICE"):
+    def __init__(self, user_credentials, active_account_type="PRACTICE"):
         self.size = [1, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800,
                      3600, 7200, 14400, 28800, 43200, 86400, 604800, 2592000]
-        self.email = email
-        self.password = password
+        self.email = Environment.get_user_credentials()[0]
+        self.password = Environment.get_user_credentials()[1]
         self.suspend = 0.5
         self.thread = None
         self.subscribe_candle = []
