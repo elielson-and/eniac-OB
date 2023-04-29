@@ -3,6 +3,7 @@ import sys
 import json
 import datetime
 from view.Messages import Message
+from config.Environment.Environment import Environment
 
 class Chart:
     def __init__(self, api) -> None:
@@ -13,31 +14,23 @@ class Chart:
     # Get all available assets 
     #------------------------------ 
     def get_all_available_assets(self):
-
         print(Message.info("Obtendo lista de ativos disponíveis..."))
-
-        assets = self.api.get_all_profit()
-        filtered_assets = {}
-        for asset in assets:
-            if asset in ["EURUSD", "EURGBP", "EURJPY", "GBPUSD", "AUDCAD", "AUDUSD", "GBPJPY", "USDJPY", "AUDJPY"]:
-                filtered_assets[asset] = assets[asset]
-
-        # Ordena os ativos por payout em ordem decrescente
-        sorted_assets = sorted(filtered_assets.items(), key=lambda x: x[1]["turbo"], reverse=True)
-
-        # Cria um novo dicionário com os ativos ordenados
-        ordered_assets = {}
-        for asset in sorted_assets:
-            ordered_assets[asset[0]] = asset[1]
-
-        json_formatado = json.dumps(ordered_assets, indent=2)
-
-        # Imprime o resultado
+        allow_otc = Environment.can_trade_otc()
+        all_assets = self.api.get_all_open_time()
+        open_digital_assets = {}
+        desired_assets = ["EURUSD", "EURGBP", "EURJPY", "GBPUSD", "AUDCAD", "AUDUSD", "GBPJPY", "USDJPY", "AUDJPY"]
+        for asset, data in all_assets.get("digital", {}).items():
+            if data.get("open", False):
+                if allow_otc:
+                    if asset.split("-")[0] in desired_assets:
+                        open_digital_assets[asset] = data
+                else:
+                    if asset.split("-")[0] in desired_assets and "-OTC" not in asset:
+                        open_digital_assets[asset] = data
+        json_formatado = json.dumps(open_digital_assets, indent=2)
         return json_formatado
-    
 
-
-
+      
 
     #------------------------------ 
     # Check if volatility is high
@@ -61,9 +54,6 @@ class Chart:
 
 
 
-
-
-    
     #-------------------------------------
     #  Check if the market is lateralized
     #-------------------------------------

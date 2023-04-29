@@ -41,3 +41,29 @@ class Environment:
                 elif "IQOPTION_PASSWORD" in line:
                     user_password = line.split("=")[1].strip()
         return {"email":user_email, "password":user_password}
+    
+    #-----------------------------------------------------------------
+    #| Get user choice about operation modality
+    #-----------------------------------------------------------------
+    def get_iqoption_modality(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "MODALITY" in line:
+                    modality = line.split("=")[1].strip().lower()
+                
+        return modality
+    
+    #-----------------------------------------------------------------
+    #| Get user choice about OTC/UTC
+    #-----------------------------------------------------------------
+    def can_trade_otc(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "ALLOW_OTC" in line:
+                    choice = line.split("=")[1].strip().lower()
+                    if(choice == "yes"):
+                        return True
+                    else:
+                        return False

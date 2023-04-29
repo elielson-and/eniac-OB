@@ -36,25 +36,14 @@ class Runner:
 
             # For para validar ativo por ativo
             assets = json.loads(self.available_assets)
+            print(assets)
+            sys.exit()
             for asset, payouts in assets.items():
                 payout_turbo = payouts['turbo']
                 # se o ativo atual for elegivel realiza a entrada
                 print(f"Analisando ativo [{asset}]...")
                 if(analyzer.is_asset_elegible_to_trade(asset, payout_turbo)):
-                    Iq=IQ_Option("elielsonand123@gmail.com","andre4002")
-                    ACTIVES="EURUSD"
-                    duration=1#minute 1 or 5
-                    amount=100
-                    action="put"#put
-
-                    Iq.subscribe_strike_list(ACTIVES,duration)
-                    _,id=Iq.buy_digital_spot(ACTIVES,amount,action,duration)
-
-                    while True:
-                        PL=Iq.get_digital_spot_profit_after_sale(id)
-                        if PL!=None:
-                            print(PL)
-
+                    print(f"Realizando entrada [{asset}]")
                     # self.chart_trending = chart.get_chart_trend(asset, 5) 
                      
                     
