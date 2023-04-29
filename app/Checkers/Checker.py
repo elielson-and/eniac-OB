@@ -46,7 +46,7 @@ class Checker:
 
     def check_iqoption_api(self):
         print(Message.info("Conectando-se à API IQOption...")) 
-        api = IQ_Option(Environment.get_user_credentials())
+        api = IQ_Option(Environment.get_iqoption_user_credentials())
         api.connect()
         if (api.check_connect()): # se retornar true conectou
             print(f"API Version: {IQ_Option.__version__}")

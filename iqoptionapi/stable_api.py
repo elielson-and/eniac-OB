@@ -30,8 +30,8 @@ class IQ_Option:
     def __init__(self, user_credentials, active_account_type="PRACTICE"):
         self.size = [1, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800,
                      3600, 7200, 14400, 28800, 43200, 86400, 604800, 2592000]
-        self.email = Environment.get_user_credentials()[0]
-        self.password = Environment.get_user_credentials()[1]
+        self.email = Environment.get_iqoption_user_credentials()["email"]
+        self.password = Environment.get_iqoption_user_credentials()["password"]
         self.suspend = 0.5
         self.thread = None
         self.subscribe_candle = []

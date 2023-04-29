@@ -18,10 +18,6 @@ class Analyzer:
         print(f"\nAvaliando: {asset}")
         #--------------------
         if(chart.is_acceptable_payout(payout_turbo)): # Retorna true caso os 3 fatores estiverem 
-            # requirements = [
-            #     chart.is_high_volatility(asset, exp_time),
-            #     chart.is_asset_chart_lateralized(asset, exp_time)
-            # ]
             if( chart.is_high_volatility(asset, exp_time) or chart.is_asset_chart_lateralized(asset, exp_time)):
                 print("Condições de operação ruins")
                 return False

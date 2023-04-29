@@ -4,38 +4,22 @@ import os
 import sys
 sys.path.append("../../")
 from view.Messages import Message
+from config.Environment.Environment import Environment
 
 class ConexaoMySQL:
     connection = None
     
     def __init__(self):
-         with open("./env.eniac", "r") as f:
-            data = f.readlines()
+         pass
 
-            for line in data:
-                if "DB_HOST" in line:
-                    self.host = line.split("=")[1].strip()
-
-                elif "DB_NAME" in line:
-                    self.dbname = line.split("=")[1].strip()
-
-                elif "DB_USER" in line:
-                    self.user = line.split("=")[1].strip()
-
-                elif "DB_PASSWORD" in line:
-                    self.passwd = line.split("=")[1].strip()
-
-                elif "DB_SLF_CONN" in line:
-                    self.connection = line.split("=")[1].strip()
-    
     # Open connection
     def connect(self):
         try:
             self.connection = mysql.connector.connect(
-                host=self.host,
-                user=self.user,
-                password=self.passwd,
-                database=self.dbname
+                host        = Environment.get_mysql_server_credentials()["host"],
+                user        = Environment.get_mysql_server_credentials()["user"],
+                password    = Environment.get_mysql_server_credentials()["password"],
+                database    = Environment.get_mysql_server_credentials()["name"],
             )
             return True
         except mysql.connector.Error as e:
