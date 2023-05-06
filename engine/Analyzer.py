@@ -1,6 +1,6 @@
-
+import time
+from view.Messages import Message
 from app.Controller.Chart import Chart 
-
 class Analyzer:
     def __init__(self, api) -> None:
         self.api = api
@@ -12,18 +12,16 @@ class Analyzer:
 
 
 
-    def is_asset_elegible_to_trade(self, asset, payout_turbo):
+    def is_asset_elegible_to_trade(self, asset, payout):
         chart = Chart(self.api)
         exp_time = 5
-        print(f"\nAvaliando: {asset}")
+        print(f"Analizing: {asset}")
         #--------------------
-        if(chart.is_acceptable_payout(payout_turbo)): # Retorna true caso os 3 fatores estiverem 
+        if(chart.is_acceptable_payout(payout)): 
+            print(Message.success(f"Acceptable payout: {payout}%"))
             if( chart.is_high_volatility(asset, exp_time) or chart.is_asset_chart_lateralized(asset, exp_time)):
-                print("Condições de operação ruins")
                 return False
             else:
-                print("Boas condições de operação")
                 return True
         else:
-            print("Condições de operação ruins")
             return False
