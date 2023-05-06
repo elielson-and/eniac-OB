@@ -5,11 +5,12 @@ from app.Controller.Chart import Chart
 from engine.Analyzer import Analyzer
 from engine.Asset import Asset
 from view.Messages import Message
+from config.Environment.Environment import Environment
 import json
 
 class Runner:
     def __init__(self) -> None:
-        self.api = IQ_Option("elielsonand123@gmail.com","andre4002")
+        self.api = IQ_Option(Environment.get_iqoption_user_credentials())
         header={"User-Agent":r"Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"}
         cookie={"Iq":"GOOD"}
         self.api.set_session(header,cookie)
