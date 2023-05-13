@@ -2,6 +2,7 @@ import time
 import sys
 import json
 import datetime
+import talib
 import numpy as np
 from iqoptionapi.expiration import get_expiration_time
 from view.Messages import Message
@@ -21,7 +22,7 @@ class Chart:
         all_assets = self.api.get_all_open_time()
         open_digital_assets = {}
         desired_assets = ["EURUSD", "EURGBP", "EURJPY", "GBPUSD", "AUDCAD", "AUDUSD", "GBPJPY", "USDJPY", "AUDJPY"]
-        for asset, data in all_assets.get("digital", {}).items():
+        for asset, data in all_assets.get("binary", {}).items():
             if data.get("open", False):
                 if allow_otc:
                     if asset.split("-")[0] in desired_assets:
@@ -35,25 +36,26 @@ class Chart:
     #--------------------------------
     # Get payout from currently asset
     #--------------------------------
-    def get_payout(self, par, tipo = "digital", timeframe = 5):
-        self.api.subscribe_strike_list(par, timeframe)
-        while True:
-            d = self.api.get_digital_current_profit(par, timeframe)
-            if(d != False):
-                d = int(d)
-                break
-            time.sleep(1)
-        self.api.unsubscribe_strike_list(par, timeframe)
-        return d
+    # def get_payout(self, par, tipo = "digital", timeframe = 5):
+    #     self.api.subscribe_strike_list(par, timeframe)
+    #     while True:
+    #         d = self.api.get_digital_current_profit(par, timeframe)
+    #         if(d != False):
+    #             d = int(d)
+    #             break
+    #         time.sleep(1)
+    #     self.api.unsubscribe_strike_list(par, timeframe)
+    #     return d
         
-
+    def get_payout(self, par, tipo='digital', timeframe=5):
+        return self.api.get_all_profit()[par]['binary']
 
     #------------------------------ 
     # Check if volatility is high
     #------------------------------ 
     def is_high_volatility(self, asset, expiration_time):
         pair = asset
-        candles = self.api.get_candles(pair, expiration_time * 60, 10, time.time())
+        candles = self.api.get_candles(pair, expiration_time * 60, 50, time.time())
         
         volatility = []
         for candle in candles:
@@ -61,15 +63,26 @@ class Chart:
             volatility.append(abs(diff))
 
         average_volatility = sum(volatility) / len(volatility)
-        if average_volatility > 0.001:
+        if average_volatility > 0.0015:
             print(Message.alert("High volatility"))
             return True # High
         else:
             print(Message.success("Low volatility"))
             return False # Low
         
+    # (In test)
+    def is_high_volatility_v2(self, pair, period=5): 
+        candles = self.api.get_candles(pair, period * 60, 50, time.time())
+        amplitudes = [candle["max"] - candle["min"] for candle in candles]
+        average_amplitude = sum(amplitudes) / len(amplitudes)
+        if average_amplitude >= 0.0015:
+            print(Message.alert(f"{pair} => Alta vol"))
+            return True # High
+        else:
+            print(Message.success(f"{pair} => Baixa vol"))
+            return False # Low
+    
 
-   
     #-------------------------------------
     #  Check if the market is lateralized
     #-------------------------------------
@@ -95,6 +108,19 @@ class Chart:
             # Caso não haja nenhum candle, retorna False
             return False
 
+    #Corrigir aqui
+    def is_asset_chart_lateralized_v2(self, asset, expiration_time) :
+        # get candles for the selected asset and period
+        candles = self.api.get_candles(asset, expiration_time * 60, 50, time.time())
+        # calculate the mean of the close prices
+        close_prices = [candle["close"] for candle in candles]
+        close_prices_mean = sum(close_prices) / len(close_prices)
+        # check if the close prices are within a certain range
+        deviation = 0.01 # set the deviation to 1% for example
+        for close_price in close_prices:
+            if close_price < close_prices_mean * (1 - deviation) or close_price > close_prices_mean * (1 + deviation):
+                print(f"{asset} +> Laterializado ")
+        print(f"{asset} +> Grafico normal \n ----")
 
 
 

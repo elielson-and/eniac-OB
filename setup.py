@@ -3,11 +3,9 @@ from app.Checkers.Checker import Checker
 from engine.Runner import Runner
 from view.Messages import Message
 
-SplashScreen.show()
-checker = Checker()
+# SplashScreen.show()
+# checker = Checker()
 rn = Runner()
 
-try:    
-    rn.start_application()
-except Exception as exp:
-    print(Message.general_error(exp))
+rn.start_application()
+

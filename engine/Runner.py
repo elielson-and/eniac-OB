@@ -33,10 +33,11 @@ class Runner:
             #Vai obter todos os ativos disponiveis no momento
             self.available_assets = chart.get_all_available_assets()            # Array
             for asset in self.available_assets:
-                if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
-                    print(Message.success("Good conditions") + "\n")
-                else:
-                    print(Message.danger("Bad conditions") + "\n")
+                analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))
+                # if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
+                #     print(Message.success("Good conditions") + "\n")
+                # else:
+                #     print(Message.danger("Bad conditions") + "\n")
             
                 
 
