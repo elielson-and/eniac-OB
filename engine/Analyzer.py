@@ -15,11 +15,10 @@ class Analyzer:
     def is_asset_elegible_to_trade(self, asset, payout):
         chart = Chart(self.api)
         periodo = 5
-        print(f"Analizing: {asset}")
+        print(f"Analizing: {asset} | Payout: {payout}")
         #--------------------
         if(chart.is_acceptable_payout(payout)): 
-            print(Message.success(f"Acceptable payout: {payout}%"))
-            if( chart.is_high_volatility(asset, periodo) or chart.is_asset_chart_lateralized_v2(asset, periodo)):
+            if( chart.is_high_volatility_v3(asset, periodo) or chart.is_asset_chart_lateralized_v2(asset, periodo)):
                 return False
             else:
                 return True

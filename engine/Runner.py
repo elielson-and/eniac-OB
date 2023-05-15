@@ -17,7 +17,7 @@ class Runner:
         self.api.connect()
 
         #------- Operational variables --------
-        self.available_assets = {}
+    
 
         #------- Trade execution variables --------
         # ...
@@ -27,17 +27,15 @@ class Runner:
         #---Instances---
         chart = Chart(self.api)
         analyzer = Analyzer(self.api)
-
         # Runner
         while True:
             #Vai obter todos os ativos disponiveis no momento
-            self.available_assets = chart.get_all_available_assets()            # Array
-            for asset in self.available_assets:
-                analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))
-                # if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
-                #     print(Message.success("Good conditions") + "\n")
-                # else:
-                #     print(Message.danger("Bad conditions") + "\n")
+            for asset in chart.get_all_available_assets():
+                if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
+                    print(Message.success("Good conditions") + "\n")
+                else:
+                    print(Message.danger("Bad conditions") + "\n")
+            sys.exit()
             
                 
 
