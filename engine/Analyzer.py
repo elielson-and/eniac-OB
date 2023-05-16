@@ -11,16 +11,24 @@ class Analyzer:
         self.chart_trending = ""
 
 
-
+    # ========================================================================
     def is_asset_elegible_to_trade(self, asset, payout):
         chart = Chart(self.api)
         periodo = 5
-        print(f"Analizing: {asset} | Payout: {payout}")
+        print(f"\nAnalizing: {Message.txt_yellow(asset)} | Payout: {payout}%")
+        
         #--------------------
         if(chart.is_acceptable_payout(payout)): 
             if( chart.is_high_volatility_v3(asset, periodo) or chart.is_asset_chart_lateralized_v2(asset, periodo)):
                 return False
             else:
+                chart.get_chart_trend(asset,5)
                 return True
         else:
             return False
+    # ======================================================================== 
+    
+    # Strategy
+
+    def is_support_or_resistance():
+        pass

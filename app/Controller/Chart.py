@@ -17,7 +17,7 @@ class Chart:
     # Get all available assets 
     #------------------------------ 
     def get_all_available_assets(self):
-        print(Message.info("Obtaining chart info..."))
+        print(Message.info("Updating chart info..."))
         allow_otc = Environment.can_trade_otc()
         all_assets = self.api.get_all_open_time()
         open_digital_assets = {}
@@ -73,11 +73,10 @@ class Chart:
     # (In test)
     def is_high_volatility_v2(self, asset, expiration_time):
         candle_period = expiration_time * 60
-
         # Obtem os ultimos 288 candles de 5 min, gera uma media de oscilação
         # e compara os ultimos 20 candles com esta média para analisar possivel volatilidade
         candles = self.api.get_candles(asset, candle_period, 1000, time.time()) # < 288 = 24h
-        print(f"Candles analisados: {len(candles)} - M{expiration_time}")
+        print(f"Analized candles: {len(candles)} - M{expiration_time}")
         # Calculate average volatility of last 10 candles
         volatility = []
         for candle in candles:
@@ -98,13 +97,14 @@ class Chart:
             print(Message.success("Low volatility"))
             return False # Low
         
+        
     # Ultiliza as bandas de bolliger para realizar a a analise de volatilidade
     def is_high_volatility_v3(self, asset, expiration_time):
         candle_period = expiration_time * 60
 
         # Obtem os ultimos 8640 candles de 5 min (equivalente a 30 dias), calcula a volatilidade
         candles = self.api.get_candles(asset, candle_period, 1000, time.time())
-        print(f"Candles analisados: {len(candles)} - M{expiration_time}")
+        print(f"Analized candles: {len(candles)} - M{expiration_time}")
         prices = np.array([candle['close'] for candle in candles])
         # Configurando periodo de 20 e desvio de 2
         upper, middle, lower = talib.BBANDS(prices, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
@@ -118,10 +118,10 @@ class Chart:
 
         # Compara a largura atual com a média de volatilidade
         if current_width > average_volatility:
-            print(Message.alert("High volatility"))
+            print(f"Volatility: {Message.txt_red('[ HIGH ]')}")
             return True # High
         else:
-            print(Message.success("Low volatility"))
+            print(f"Volatility: {Message.txt_green('[ LOW ]')}")
             return False # Low
             
 
@@ -161,8 +161,8 @@ class Chart:
         deviation = 0.01 # set the deviation to 1% for example
         for close_price in close_prices:
             if close_price < close_prices_mean * (1 - deviation) or close_price > close_prices_mean * (1 + deviation):
-                print(f"{asset} +> Laterializado ")
-        print(f"{asset} +> Grafico normal \n ----")
+                print(f"Laterialized: {Message.txt_red('[ YES ]')}")
+        print(f"Laterialized: {Message.txt_green('[ NO ]')}")
 
 
 

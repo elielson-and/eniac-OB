@@ -1,5 +1,6 @@
 import time
 import sys
+import os
 from iqoptionapi.stable_api import IQ_Option
 from app.Controller.Chart import Chart 
 from engine.Analyzer import Analyzer
@@ -17,7 +18,6 @@ class Runner:
         self.api.connect()
 
         #------- Operational variables --------
-    
 
         #------- Trade execution variables --------
         # ...
@@ -32,10 +32,15 @@ class Runner:
             #Vai obter todos os ativos disponiveis no momento
             for asset in chart.get_all_available_assets():
                 if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
-                    print(Message.success("Good conditions") + "\n")
+                    print("Chart conditions: " + Message.txt_green("[ GOOD ]") + "\n--------------")
+                    print(f"Iniciando compra: {asset}")
+                    time.sleep(1)
+                    os.system('cls||clear')
                 else:
-                    print(Message.danger("Bad conditions") + "\n")
-            sys.exit()
+                    print("Chart conditions: " + Message.txt_red("[ BAD ]") + "\n--------------")
+                    print(f"[ {asset} ] - Compra cancelada, condições não favoráveis.")
+                    os.system('cls||clear')
+            
             
                 
 
