@@ -32,7 +32,8 @@ class Chart:
                         open_digital_assets[asset] = data
         #json_formatado = json.dumps(open_digital_assets, indent=2)
         return open_digital_assets
-
+    
+   
     #--------------------------------
     # Get payout from currently asset
     #--------------------------------
@@ -153,7 +154,7 @@ class Chart:
     #Corrigir aqui
     def is_asset_chart_lateralized_v2(self, asset, expiration_time) :
         # get candles for the selected asset and period
-        candles = self.api.get_candles(asset, expiration_time * 60, 50, time.time())
+        candles = self.api.get_candles(asset, expiration_time * 60, 10, time.time())
         # calculate the mean of the close prices
         close_prices = [candle["close"] for candle in candles]
         close_prices_mean = sum(close_prices) / len(close_prices)
@@ -179,7 +180,6 @@ class Chart:
         
         # Busca os dados do histórico do ativo no período definido
         candles = self.api.get_candles(asset, period, 100, start_time)
-        
         
         # Calcula a média móvel simples de 20 períodos
         sma_20 = sum(candle["close"] for candle in candles[-20:]) / 20

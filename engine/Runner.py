@@ -32,14 +32,17 @@ class Runner:
             #Vai obter todos os ativos disponiveis no momento
             for asset in chart.get_all_available_assets():
                 if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
+                    print(Message.txt_yellow(analyzer.get_support_resistance_v2(asset,5)))
+                    print(Message.txt_yellow(analyzer.analyze_mhi_strategy(asset,5)))
                     print("Chart conditions: " + Message.txt_green("[ GOOD ]") + "\n--------------")
-                    print(f"Iniciando compra: {asset}")
-                    time.sleep(1)
-                    os.system('cls||clear')
+                    # print(f"Iniciando compra: {asset}")
+                    # time.sleep(1)
+                    # os.system('cls||clear')
                 else:
                     print("Chart conditions: " + Message.txt_red("[ BAD ]") + "\n--------------")
-                    print(f"[ {asset} ] - Compra cancelada, condições não favoráveis.")
-                    os.system('cls||clear')
+                    # print(f"[ {asset} ] - Compra cancelada, condições não favoráveis.")
+                    # os.system('cls||clear')
+            sys.exit()
             
             
                 
