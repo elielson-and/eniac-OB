@@ -19,12 +19,13 @@ class Chart:
         print(Message.info("Updating chart info..."))
         assets = self.api.get_all_open_time()
         open_assets = {}
-        for asset in assets[Env.trade_modality()]:
-            if assets[Env.trade_modality()][asset]['open'] == True:
-                open_assets[asset] = assets[asset]
-        
+        for asset in assets['digital']:
+            if assets['digital'][asset]['open'] == True:
+                if Env.allow_otc:
+                    open_assets[asset] = assets[asset]
+                elif "-OTC" not in asset:
+                    open_assets[asset] = assets[asset]
         return open_assets
-
    
     #--------------------------------
     # Get payout from currently asset

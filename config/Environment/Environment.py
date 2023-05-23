@@ -72,7 +72,7 @@ class Environment:
     #-----------------------------------------------------------------
     #| Get user choice about OTC/UTC
     #-----------------------------------------------------------------
-    def can_trade_otc(): 
+    def allow_otc(): 
         with open("./env.eniac", "r") as f:
             data = f.readlines()
             for line in data:
