@@ -37,22 +37,37 @@ class Environment:
             data = f.readlines()
             for line in data:
                 if "IQOPTION_EMAIL" in line:
-                    user_email = line.split("=")[1].strip()
+                    user_email = line.split("=")[1].strip().lower()
                 elif "IQOPTION_PASSWORD" in line:
-                    user_password = line.split("=")[1].strip()
+                    user_password = line.split("=")[1].strip().lower()
         return {"email":user_email, "password":user_password}
+    
+    #-----------------------------------------------------------------
+    #| Get the candle period
+    #-----------------------------------------------------------------
+    def account_type(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "ACCOUNT_TYPE" in line:
+                    choice = line.split("=")[1].strip().lower()
+                    return str(choice)
     
     #-----------------------------------------------------------------
     #| Get user choice about operation modality
     #-----------------------------------------------------------------
-    def get_iqoption_modality(): 
-        with open("./env.eniac", "r") as f:
-            data = f.readlines()
-            for line in data:
-                if "MODALITY" in line:
-                    modality = line.split("=")[1].strip().lower()
-                
-        return modality
+    def trade_modality(): 
+        try:
+
+            with open("./env.eniac", "r") as f:
+                data = f.readlines()
+                for line in data:
+                    if "MODALITY" in line:
+                        modality = line.split("=")[1].strip().lower()
+                    
+            return str(modality)
+        except:
+            return 'digital'
     
     #-----------------------------------------------------------------
     #| Get user choice about OTC/UTC
@@ -67,3 +82,25 @@ class Environment:
                         return True
                     else:
                         return False
+    
+    #-----------------------------------------------------------------
+    #| Get the candle period
+    #-----------------------------------------------------------------
+    def candle_period(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "CANDLE_PERIOD_IN_MIN" in line:
+                    choice = line.split("=")[1].strip().lower()
+                    return int(choice)
+    
+    #-----------------------------------------------------------------
+    #| Get aceitable payout to make operations
+    #-----------------------------------------------------------------
+    def payout(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "ACCEPTABLE_PAYOUT" in line:
+                    value = line.split("=")[1].strip().lower()
+                    return str(value)

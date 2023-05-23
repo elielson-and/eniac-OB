@@ -4,9 +4,8 @@ import json
 import datetime
 import talib
 import numpy as np
-from iqoptionapi.expiration import get_expiration_time
 from view.Messages import Message
-from config.Environment.Environment import Environment
+from config.Environment.Environment import Environment as Env
 
 class Chart:
     def __init__(self, api) -> None:
@@ -18,21 +17,14 @@ class Chart:
     #------------------------------ 
     def get_all_available_assets(self):
         print(Message.info("Updating chart info..."))
-        allow_otc = Environment.can_trade_otc()
-        all_assets = self.api.get_all_open_time()
-        open_digital_assets = {}
-        desired_assets = ["EURUSD", "EURGBP", "EURJPY", "GBPUSD", "AUDCAD", "AUDUSD", "GBPJPY", "USDJPY", "AUDJPY"]
-        for asset, data in all_assets.get("binary", {}).items():
-            if data.get("open", False):
-                if allow_otc:
-                    if asset.split("-")[0] in desired_assets:
-                        open_digital_assets[asset] = data
-                else:
-                    if asset.split("-")[0] in desired_assets and "-OTC" not in asset:
-                        open_digital_assets[asset] = data
-        #json_formatado = json.dumps(open_digital_assets, indent=2)
-        return open_digital_assets
-    
+        assets = self.api.get_all_open_time()
+        open_assets = {}
+        for asset in assets[Env.trade_modality()]:
+            if assets[Env.trade_modality()][asset]['open'] == True:
+                open_assets[asset] = assets[asset]
+        
+        return open_assets
+
    
     #--------------------------------
     # Get payout from currently asset
@@ -48,8 +40,25 @@ class Chart:
     #     self.api.unsubscribe_strike_list(par, timeframe)
     #     return d
         
-    def get_payout(self, par):
-        return self.api.get_all_profit()[par]['binary']
+    def get_payout(self, asset, type, period = 5):
+        if type == 'binary':
+            return self.api.get_all_profit()[asset][Env.trade_modality()]
+        
+        elif type == 'turbo': # Unused for this time, but available
+            binary_payout_assets = self.api.get_all_profit()
+            return int(100 * binary_payout_assets[asset, Env.candle_period()])
+        
+        elif type == 'digital':
+            self.api.subscribe_strike_list(asset, Env.candle_period())
+            while True:
+                digital_payout_asset = self.api.get_digital_current_profit(asset, Env.candle_period())
+                if digital_payout_asset != False:
+                    digital_payout_asset = int(digital_payout_asset)
+                    break
+                time.sleep(0.4)
+            self.api.unsubscribe_strike_list(asset, Env.candle_period())
+            return digital_payout_asset
+        
 
     #------------------------------ 
     # Check if volatility is high
@@ -72,12 +81,12 @@ class Chart:
     #         return False # Low
         
     # (In test)
-    def is_high_volatility_v2(self, asset, expiration_time):
-        candle_period = expiration_time * 60
+    def is_high_volatility_v2(self, asset):
+        candle_period = Env.candle_period() * 60
         # Obtem os ultimos 288 candles de 5 min, gera uma media de oscilação
         # e compara os ultimos 20 candles com esta média para analisar possivel volatilidade
         candles = self.api.get_candles(asset, candle_period, 1000, time.time()) # < 288 = 24h
-        print(f"Analized candles: {len(candles)} - M{expiration_time}")
+        print(f"Analized candles: {len(candles)} - M{Env.candle_period()}")
         # Calculate average volatility of last 10 candles
         volatility = []
         for candle in candles:
@@ -100,12 +109,10 @@ class Chart:
         
         
     # Ultiliza as bandas de bolliger para realizar a a analise de volatilidade
-    def is_high_volatility_v3(self, asset, expiration_time):
-        candle_period = expiration_time * 60
-
+    def is_high_volatility_v3(self, asset):
         # Obtem os ultimos 8640 candles de 5 min (equivalente a 30 dias), calcula a volatilidade
-        candles = self.api.get_candles(asset, candle_period, 1000, time.time())
-        print(f"Analized candles: {len(candles)} - M{expiration_time}")
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 1000, time.time())
+        print(f"Analized candles: {len(candles)} - M{Env.candle_period()}")
         prices = np.array([candle['close'] for candle in candles])
         # Configurando periodo de 20 e desvio de 2
         upper, middle, lower = talib.BBANDS(prices, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
@@ -129,13 +136,13 @@ class Chart:
     #-------------------------------------
     #  Check if the market is lateralized
     #-------------------------------------
-    def is_asset_chart_lateralized(self, asset, expiration_time):
+    def is_asset_chart_lateralized(self, asset):
         num_candles_behind = 20
         # Define o horário atual como o horário de término dos candles
         endtime = int(datetime.datetime.now().timestamp())
 
         # Obtém os últimos 20 candles do ativo EURUSD
-        candles = self.api.get_candles(asset, 60 * expiration_time, endtime, num_candles_behind)
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, endtime, num_candles_behind)
 
         # Calcula a variação entre o preço de abertura e fechamento de cada candle
         price_changes = []
@@ -152,9 +159,9 @@ class Chart:
             return False
 
     #Corrigir aqui
-    def is_asset_chart_lateralized_v2(self, asset, expiration_time) :
+    def is_asset_chart_lateralized_v2(self, asset) :
         # get candles for the selected asset and period
-        candles = self.api.get_candles(asset, expiration_time * 60, 10, time.time())
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 10, time.time())
         # calculate the mean of the close prices
         close_prices = [candle["close"] for candle in candles]
         close_prices_mean = sum(close_prices) / len(close_prices)
@@ -170,16 +177,10 @@ class Chart:
     #------------------------------ 
     #  Get chart trend, up or down
     #------------------------------ 
-    def get_chart_trend(self, asset , expiration_time ):
-        # Define o período de 5 minutos
-        period = expiration_time * 60
-        
-        # Define o intervalo de tempo a ser verificado
-        end_time = time.time()
-        start_time = end_time - period
-        
+    def get_chart_trend(self, asset  ):
+ 
         # Busca os dados do histórico do ativo no período definido
-        candles = self.api.get_candles(asset, period, 100, start_time)
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 100, time.time())
         
         # Calcula a média móvel simples de 20 períodos
         sma_20 = sum(candle["close"] for candle in candles[-20:]) / 20
@@ -190,32 +191,37 @@ class Chart:
         # Verifica se a média móvel de 20 períodos está acima da média móvel de 50 períodos
         if sma_20 > sma_50:
             print(f"[{asset}] => HIGH TREND")
+            return 'high'
         else:
             print(f"[{asset}] => LOW TREND")
+            return 'low'
 
     
     #---------------------------------------
     #  Verify if payout value is acceptable
     #---------------------------------------
     def is_acceptable_payout(self,payout):
-        if(payout >= 0.80):
+        acceptable_payout = ''
+        if Env.trade_modality() == 'binary':
+            acceptable_payout = '0.'+Env.payout()
+        elif Env.trade_modality() == 'digital':
+            acceptable_payout = Env.payout()
+
+        if(payout >= float(acceptable_payout)):
             return True
         else:
             return False
+
 
     
     #---------------------------------------------------------
     #  Verify if the candle wick is big or not and return this
     #---------------------------------------------------------
-    def is_big_wick(self, asset, period):
+    def is_big_wick(self, asset):
         aceitable_wick_size = 1.7
-        # Verifica se o período informado é válido
-        if period not in [60, 120, 180, 300, 600, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400]:
-            print("Período inválido!")
-            return
-
+   
         # Pega os últimos 10 candles
-        candles = self.api.get_candles(asset, period, 10, time.time())
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 10, time.time())
 
         # Verifica se há pelo menos 10 candles
         if len(candles) < 10:
@@ -238,3 +244,52 @@ class Chart:
             return True
         else:
             return False
+    
+    def verificar_pavios_grandes(self, asset ):
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 1000, time.time())  # Obtém os últimos 1000 candles
+
+        pavios = []
+        for i in range(1000):
+            candle = candles[i]
+            tamanho_pavio_superior = abs(candle['max'] - max(candle['close'], candle['open']))
+            tamanho_pavio_inferior = abs(candle['min'] - min(candle['close'], candle['open']))
+            pavios.append(tamanho_pavio_superior)
+            pavios.append(tamanho_pavio_inferior)
+
+        media_pavios = sum(pavios) / (len(pavios) // 2)  # Correção: Dividir por 2 para considerar apenas um dos lados dos pavios
+
+        ultimos_candles = candles[-20:]
+        for candle in ultimos_candles:
+            tamanho_pavio_superior = abs(candle['max'] - max(candle['close'], candle['open']))
+            tamanho_pavio_inferior = abs(candle['min'] - min(candle['close'], candle['open']))
+            if tamanho_pavio_superior > media_pavios or tamanho_pavio_inferior > media_pavios:
+                print("Pavios grandes")
+                return
+
+        print("Pavios normais em relação à maioria")
+
+    
+    def is_candles_small(self, asset):
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 400, time.time())  # Obtém os últimos 400 candles
+
+        tamanho_corpo_candles = []
+        for candle in candles:
+            tamanho_corpo = abs(candle['close'] - candle['open'])
+            tamanho_corpo_candles.append(tamanho_corpo)
+
+        media_tamanho_corpo_400 = sum(tamanho_corpo_candles) / len(tamanho_corpo_candles)
+
+        ultimos_candles = candles[-10:]
+        tamanho_corpo_ultimos_candles = []
+        for candle in ultimos_candles:
+            tamanho_corpo = abs(candle['close'] - candle['open'])
+            tamanho_corpo_ultimos_candles.append(tamanho_corpo)
+
+        media_tamanho_corpo_10 = sum(tamanho_corpo_ultimos_candles) / len(tamanho_corpo_ultimos_candles)
+
+        if media_tamanho_corpo_10 < media_tamanho_corpo_400:
+            return "Candles muito pequenos"
+
+        return "Candles normais"
+
+
