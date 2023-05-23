@@ -289,8 +289,10 @@ class Chart:
         media_tamanho_corpo_10 = sum(tamanho_corpo_ultimos_candles) / len(tamanho_corpo_ultimos_candles)
 
         if media_tamanho_corpo_10 < media_tamanho_corpo_400:
-            return "Candles muito pequenos"
+            print("Candles muito pequenos")
+            return True
 
-        return "Candles normais"
+        print("Candles normais")
+        return False
 
 

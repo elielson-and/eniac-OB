@@ -2,6 +2,7 @@ import time
 from view.Messages import Message
 from app.Controller.Chart import Chart 
 import numpy as np
+from config.Environment.Environment import Environment as Env
 
 class Analyzer:
     def __init__(self, api) -> None:
@@ -20,10 +21,9 @@ class Analyzer:
         
         #--------------------
         if(chart.is_acceptable_payout(payout)): 
-            if( chart.is_high_volatility_v3(asset) or chart.is_asset_chart_lateralized_v2(asset)):
+            if( chart.is_high_volatility_v3(asset) or chart.is_asset_chart_lateralized_v2(asset)) or chart.is_candles_small(asset):
                 return False
             else:
-                chart.get_chart_trend(asset)
                 return True
         else:
             return False
@@ -31,8 +31,8 @@ class Analyzer:
     
     # Strategy
 
-    def get_support_resistance(self, asset, timeframe):
-        candle_period = timeframe * 60
+    def get_support_resistance(self, asset):
+        candle_period = Env.candle_period() * 60
 
         candles200 = self.api.get_candles(asset, candle_period, 200, time.time())
         candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
@@ -66,8 +66,8 @@ class Analyzer:
         return "nothing"
     
 
-    def get_support_resistance_v2(self, asset, timeframe):
-        candle_period = timeframe * 60
+    def get_support_resistance_v2(self, asset):
+        candle_period = Env.candle_period() * 60
 
         candles200 = self.api.get_candles(asset, candle_period, 200, time.time())
         candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
@@ -171,10 +171,9 @@ class Analyzer:
     #     else:
     #         return "Nenhuma sugestão de entrada encontrada"
 
-    def analyze_mhi_strategy(self, asset, timeframe):
-        candle_period = timeframe * 60
+    def analyze_mhi_strategy(self, asset):
 
-        candles = self.api.get_candles(asset, candle_period, 500, time.time())  # Obtém os últimos 500 candles
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 500, time.time())  # Obtém os últimos 500 candles
         close_prices = np.array([float(candle["close"]) for candle in candles])
 
         entry_suggestion = None
@@ -187,16 +186,16 @@ class Analyzer:
             current_price = close_prices[i+11]
 
             if current_price == max_price:
-                entry_suggestion = "PUT"  # Preço atual é o topo, sugere entrada PUT
+                entry_suggestion = "put"  # Preço atual é o topo, sugere entrada PUT
                 break
             elif current_price == min_price:
-                entry_suggestion = "CALL"  # Preço atual é o fundo, sugere entrada CALL
+                entry_suggestion = "call"  # Preço atual é o fundo, sugere entrada CALL
                 break
 
         if entry_suggestion:
-            return f"Entrada recomendada: {entry_suggestion}"
+            return entry_suggestion
         else:
-            return "Nenhuma sugestão de entrada encontrada"
+            return 'nothing'
 
 
 
