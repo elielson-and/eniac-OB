@@ -10,7 +10,7 @@ class ConexaoMySQL:
     connection = None
     
     def __init__(self):
-         pass
+        pass
 
     # Open connection
     def connect(self):
@@ -41,6 +41,13 @@ class ConexaoMySQL:
         except mysql.connector.Error as error:
             return "Erro na consulta: {}".format(error)
         
+    def insert(self, query):
+        sql = self.connection.cursor()
+        sql.execute(query)
+        self.connection.commit()
+        print("Commitou")
+        
+        
     # Run a script
     def run(query):
         try:
@@ -60,4 +67,4 @@ class ConexaoMySQL:
     def close_connection(self):
         if self.connection.is_connected():
             self.connection.close()
-            return "Conexão fechada com sucesso!"
+            

@@ -1,0 +1,18 @@
+Asset: USDCAD
+Direction: put
+Candle Data:
+Open: 1.35059, Close: 1.350515, High: 1.350725, Low: 1.35049
+Open: 1.35052, Close: 1.35042, High: 1.350735, Low: 1.350405
+Open: 1.350425, Close: 1.35006, High: 1.350685, Low: 1.34999
+Open: 1.350055, Close: 1.35025, High: 1.350255, Low: 1.34991
+Open: 1.350245, Close: 1.34995, High: 1.350245, Low: 1.349935
+--------------------
+Asset: EURJPY
+Direction: put
+Candle Data:
+Open: 150.806, Close: 150.786, High: 150.8365, Low: 150.7825
+Open: 150.7855, Close: 150.7715, High: 150.786, Low: 150.7455
+Open: 150.774, Close: 150.7455, High: 150.7865, Low: 150.7455
+Open: 150.74, Close: 150.701, High: 150.756, Low: 150.6995
+Open: 150.7015, Close: 150.7335, High: 150.735, Low: 150.7005
+--------------------

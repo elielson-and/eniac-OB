@@ -104,3 +104,37 @@ class Environment:
                 if "ACCEPTABLE_PAYOUT" in line:
                     value = line.split("=")[1].strip().lower()
                     return str(value)
+                
+
+    #-----------------------------------------------------------------
+    #| Project version
+    #-----------------------------------------------------------------
+    def project_version(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "PROJECT_VERSION" in line:
+                    value = line.split("=")[1].strip().lower()
+                    return str(value)
+    
+    #-----------------------------------------------------------------
+    #| Is test or not
+    #-----------------------------------------------------------------
+    def is_test(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "IS_TEST" in line:
+                    value = line.split("=")[1].strip().lower()
+                    return str(value)
+                
+    #-----------------------------------------------------------------
+    #| Investiment Amount
+    #-----------------------------------------------------------------
+    def cash_amount(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "CASH_AMOUNT" in line:
+                    value = line.split("=")[1].strip().lower()
+                    return str(value)

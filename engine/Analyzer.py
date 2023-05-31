@@ -7,7 +7,6 @@ from config.Environment.Environment import Environment as Env
 class Analyzer:
     def __init__(self, api) -> None:
         self.api = api
-
         self.available_assets = {}
         self.chart_volatility = ""
         self.is_chart_laterialized = False

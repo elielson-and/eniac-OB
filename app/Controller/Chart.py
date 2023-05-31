@@ -41,15 +41,16 @@ class Chart:
     #     self.api.unsubscribe_strike_list(par, timeframe)
     #     return d
         
-    def get_payout(self, asset, type, period = 5):
-        if type == 'binary':
-            return self.api.get_all_profit()[asset][Env.trade_modality()]
+    def get_payout(self, asset):
+        modality = Env.trade_modality()
+        if modality == 'binary':
+            return self.api.get_all_profit()[asset][modality]
         
-        elif type == 'turbo': # Unused for this time, but available
+        elif modality == 'turbo': # Unused for this time, but available
             binary_payout_assets = self.api.get_all_profit()
             return int(100 * binary_payout_assets[asset, Env.candle_period()])
         
-        elif type == 'digital':
+        elif modality == 'digital':
             self.api.subscribe_strike_list(asset, Env.candle_period())
             while True:
                 digital_payout_asset = self.api.get_digital_current_profit(asset, Env.candle_period())
@@ -171,7 +172,9 @@ class Chart:
         for close_price in close_prices:
             if close_price < close_prices_mean * (1 - deviation) or close_price > close_prices_mean * (1 + deviation):
                 print(f"Laterialized: {Message.txt_red('[ YES ]')}")
+                return True
         print(f"Laterialized: {Message.txt_green('[ NO ]')}")
+        return False
 
 
 
@@ -280,7 +283,7 @@ class Chart:
 
         media_tamanho_corpo_400 = sum(tamanho_corpo_candles) / len(tamanho_corpo_candles)
 
-        ultimos_candles = candles[-10:]
+        ultimos_candles = candles[-5:]
         tamanho_corpo_ultimos_candles = []
         for candle in ultimos_candles:
             tamanho_corpo = abs(candle['close'] - candle['open'])
