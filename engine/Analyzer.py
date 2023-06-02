@@ -20,7 +20,7 @@ class Analyzer:
         
         #--------------------
         if(chart.is_acceptable_payout(payout)): 
-            if( chart.is_high_volatility_v3(asset) or chart.is_asset_chart_lateralized_v2(asset)) or chart.is_candles_small(asset):
+            if( chart.is_high_volatility_v3(asset) or chart.is_asset_chart_lateralized_v2(asset)) or chart.is_candles_small(asset) or chart.is_big_wick(asset):
                 return False
             else:
                 return True

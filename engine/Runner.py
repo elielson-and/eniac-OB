@@ -38,8 +38,6 @@ class Runner:
         # Runner
         while True:
             for asset in chart.get_all_available_assets():
-                trade.buy(asset, 'call', chart.get_payout(asset))
-                sys.exit()
                 if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
 
                     trade_direction = direction.trade_direction(
@@ -47,10 +45,14 @@ class Runner:
                         analyzer.analyze_mhi_strategy(asset),
                         chart.get_chart_trend(asset)
                     )
+
                     trade.buy(asset, trade_direction, chart.get_payout(asset))
                    
                 else:
                     print("Chart conditions: " + Message.txt_red("[ BAD ]") + "\n--------------")
+
+            # -------
+            os.system('cls||clear')
             
             
             

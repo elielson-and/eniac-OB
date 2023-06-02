@@ -33,6 +33,9 @@ class DirectionAnalizer:
         elif trend == 'low':
             self.put_option +=1
 
+
+        # Decision
+
         if self.call_option > self.put_option:
             print("OPERACAO: CALL")
             return 'call'

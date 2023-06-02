@@ -222,7 +222,7 @@ class Chart:
     #  Verify if the candle wick is big or not and return this
     #---------------------------------------------------------
     def is_big_wick(self, asset):
-        aceitable_wick_size = 1.7
+        aceitable_wick_size = 1.9
    
         # Pega os últimos 10 candles
         candles = self.api.get_candles(asset, Env.candle_period() * 60, 10, time.time())
