@@ -45,7 +45,6 @@ class ConexaoMySQL:
         sql = self.connection.cursor()
         sql.execute(query)
         self.connection.commit()
-        print("Commitou")
         
         
     # Run a script
