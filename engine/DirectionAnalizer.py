@@ -13,7 +13,6 @@ class DirectionAnalizer:
 
 
     
-    # Engine to return Just Call or Put
     def trade_direction(self, sup_res, mhi, trend):
         # Sup and res
         if sup_res == 'support':
@@ -23,9 +22,9 @@ class DirectionAnalizer:
 
         # Mhi 
         if mhi == 'call':
-            self.call_option += 1
+            self.call_option += 2
         elif mhi == 'put':
-            self.put_option += 1    
+            self.put_option += 2   
         
         # Chart trend
         if trend == 'high':
@@ -45,3 +44,5 @@ class DirectionAnalizer:
         elif self.call_option == self.put_option:
             print("OPERACAO: EMPATE DE PARAMETROS")
             return 'error'
+
+
