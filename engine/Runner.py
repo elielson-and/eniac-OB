@@ -41,7 +41,7 @@ class Runner:
                 if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
 
                     trade_direction = direction.trade_direction(
-                        analyzer.get_support_resistance_v2(asset),
+                        analyzer.get_support_resistance(asset),
                         analyzer.analyze_mhi_strategy(asset),
                         chart.get_chart_trend(asset)
                     )

@@ -30,116 +30,116 @@ class Analyzer:
     
     # Strategy
 
-    # def get_support_resistance(self, asset):
-    #     candle_period = Env.candle_period() * 60
+    def get_support_resistance(self, asset):
+        candle_period = Env.candle_period() * 60
 
-    #     candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
-    #     candles50 = self.api.get_candles(asset, candle_period, 50, time.time())
-    #     candles20 = self.api.get_candles(asset, candle_period, 20, time.time())
+        candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
+        candles50 = self.api.get_candles(asset, candle_period, 50, time.time())
+        candles20 = self.api.get_candles(asset, candle_period, 20, time.time())
 
-    #     close100 = np.array([float(candle["close"]) for candle in candles100])
-    #     close50 = np.array([float(candle["close"]) for candle in candles50])
-    #     close20 = np.array([float(candle["close"]) for candle in candles20])
+        close100 = np.array([float(candle["close"]) for candle in candles100])
+        close50 = np.array([float(candle["close"]) for candle in candles50])
+        close20 = np.array([float(candle["close"]) for candle in candles20])
 
-    #     # Etapa 1 - Analisando 100 candles
-    #     support100 = np.min(close100)
-    #     resistance100 = np.max(close100)
+        # Etapa 1 - Analisando 100 candles
+        support100 = np.min(close100)
+        resistance100 = np.max(close100)
 
-    #     # Etapa 2 - Analisando 50 candles
-    #     support50 = np.min(close50)
-    #     resistance50 = np.max(close50)
+        # Etapa 2 - Analisando 50 candles
+        support50 = np.min(close50)
+        resistance50 = np.max(close50)
 
-    #     if (support100 <= support50 + 0.0001 and support100 >= support50 - 0.0001):
-    #         return "support"
-    #     elif (resistance100 <= resistance50 + 0.0001 and resistance100 >= resistance50 - 0.0001):
-    #         return "resistance"
+        if (support100 <= support50 + 0.0001 and support100 >= support50 - 0.0001):
+            return "support"
+        elif (resistance100 <= resistance50 + 0.0001 and resistance100 >= resistance50 - 0.0001):
+            return "resistance"
 
-    #     # Etapa 3 - Analisando 20 candles
-    #     support20 = np.min(close20)
-    #     resistance20 = np.max(close20)
+        # Etapa 3 - Analisando 20 candles
+        support20 = np.min(close20)
+        resistance20 = np.max(close20)
 
-    #     if (support20 <= support50 + 0.0001 and support20 >= support50 - 0.0001):
-    #         return "support"
-    #     elif (resistance20 <= resistance50 + 0.0001 and resistance20 >= resistance50 - 0.0001):
-    #         return "resistance"
+        if (support20 <= support50 + 0.0001 and support20 >= support50 - 0.0001):
+            return "support"
+        elif (resistance20 <= resistance50 + 0.0001 and resistance20 >= resistance50 - 0.0001):
+            return "resistance"
 
-    #     return "nothing"
+        return "nothing"
 
     
 
-    def get_support_resistance_v2(self, asset):
-        candle_period = Env.candle_period() * 60
+    # def get_support_resistance_v2(self, asset):
+    #     candle_period = Env.candle_period() * 60
 
-        candles200 = self.api.get_candles(asset, candle_period, 200, time.time())
-        candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
-        candles20 = self.api.get_candles(asset, candle_period, 20, time.time())
+    #     candles200 = self.api.get_candles(asset, candle_period, 200, time.time())
+    #     candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
+    #     candles20 = self.api.get_candles(asset, candle_period, 20, time.time())
         
-        close200 = np.array([float(candle["close"]) for candle in candles200])
-        close100 = np.array([float(candle["close"]) for candle in candles100])
-        close20 = np.array([float(candle["close"]) for candle in candles20])
+    #     close200 = np.array([float(candle["close"]) for candle in candles200])
+    #     close100 = np.array([float(candle["close"]) for candle in candles100])
+    #     close20 = np.array([float(candle["close"]) for candle in candles20])
         
         
-        # Etapa 1 - Analisando 200 candles
-        supports200 = []
-        resistances200 = []
+    #     # Etapa 1 - Analisando 200 candles
+    #     supports200 = []
+    #     resistances200 = []
         
-        for i in range(2, len(close200)-2):
-            if close200[i] > close200[i-1] and close200[i] > close200[i+1]:
-                resistances200.append(close200[i])
-            elif close200[i] < close200[i-1] and close200[i] < close200[i+1]:
-                supports200.append(close200[i])
+    #     for i in range(2, len(close200)-2):
+    #         if close200[i] > close200[i-1] and close200[i] > close200[i+1]:
+    #             resistances200.append(close200[i])
+    #         elif close200[i] < close200[i-1] and close200[i] < close200[i+1]:
+    #             supports200.append(close200[i])
         
-        # Etapa 2 - Analisando 100 candles
-        supports100 = []
-        resistances100 = []
+    #     # Etapa 2 - Analisando 100 candles
+    #     supports100 = []
+    #     resistances100 = []
         
-        for i in range(2, len(close100)-2):
-            if close100[i] > close100[i-1] and close100[i] > close100[i+1]:
-                resistances100.append(close100[i])
-            elif close100[i] < close100[i-1] and close100[i] < close100[i+1]:
-                supports100.append(close100[i])
+    #     for i in range(2, len(close100)-2):
+    #         if close100[i] > close100[i-1] and close100[i] > close100[i+1]:
+    #             resistances100.append(close100[i])
+    #         elif close100[i] < close100[i-1] and close100[i] < close100[i+1]:
+    #             supports100.append(close100[i])
         
-        # Etapa 3 - Analisando 20 candles
-        supports20 = []
-        resistances20 = []
+    #     # Etapa 3 - Analisando 20 candles
+    #     supports20 = []
+    #     resistances20 = []
         
-        for i in range(2, len(close20)-2):
-            if close20[i] > close20[i-1] and close20[i] > close20[i+1]:
-                resistances20.append(close20[i])
-            elif close20[i] < close20[i-1] and close20[i] < close20[i+1]:
-                supports20.append(close20[i])
+    #     for i in range(2, len(close20)-2):
+    #         if close20[i] > close20[i-1] and close20[i] > close20[i+1]:
+    #             resistances20.append(close20[i])
+    #         elif close20[i] < close20[i-1] and close20[i] < close20[i+1]:
+    #             supports20.append(close20[i])
         
-        # Verificar se o preço atual corresponde a um suporte ou resistência registrado
+    #     # Verificar se o preço atual corresponde a um suporte ou resistência registrado
         
-        current_price = close20[-1]
+    #     current_price = close20[-1]
         
-        margin = 0.0001  # Definir a margem
+    #     margin = 0.0001  # Definir a margem
         
-        for support in supports20:
-            if support - margin <= current_price <= support + margin:
-                return "support"
+    #     for support in supports20:
+    #         if support - margin <= current_price <= support + margin:
+    #             return "support"
         
-        for resistance in resistances20:
-            if resistance - margin <= current_price <= resistance + margin:
-                return "resistance"
+    #     for resistance in resistances20:
+    #         if resistance - margin <= current_price <= resistance + margin:
+    #             return "resistance"
         
-        for support in supports100:
-            if support - margin <= current_price <= support + margin:
-                return "support"
+    #     for support in supports100:
+    #         if support - margin <= current_price <= support + margin:
+    #             return "support"
         
-        for resistance in resistances100:
-            if resistance - margin <= current_price <= resistance + margin:
-                return "resistance"
+    #     for resistance in resistances100:
+    #         if resistance - margin <= current_price <= resistance + margin:
+    #             return "resistance"
         
-        for support in supports200:
-            if support - margin <= current_price <= support + margin:
-                return "support"
+    #     for support in supports200:
+    #         if support - margin <= current_price <= support + margin:
+    #             return "support"
         
-        for resistance in resistances200:
-            if resistance - margin <= current_price <= resistance + margin:
-                return "resistance"
+    #     for resistance in resistances200:
+    #         if resistance - margin <= current_price <= resistance + margin:
+    #             return "resistance"
         
-        return "nothing"
+    #     return "nothing"
 
 
     
