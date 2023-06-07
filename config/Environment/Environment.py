@@ -116,6 +116,17 @@ class Environment:
                 if "PROJECT_VERSION" in line:
                     value = line.split("=")[1].strip().lower()
                     return str(value)
+                
+    #-----------------------------------------------------------------
+    #| Project name
+    #-----------------------------------------------------------------
+    def project_name(): 
+        with open("./env.eniac", "r") as f:
+            data = f.readlines()
+            for line in data:
+                if "PROJECT_NAME" in line:
+                    value = line.split("=")[1].strip().lower()
+                    return str(value)
     
     #-----------------------------------------------------------------
     #| Is test or not

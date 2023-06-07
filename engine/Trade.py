@@ -42,7 +42,7 @@ class Trade:
                     result = 'win'
                 
                 end_time = datetime.datetime.now()
-                ds.save_trade_info(self.position_id, asset, direction, self.modality, payout, Env.cash_amount(), str(round(status, 2)),result, Env.project_version(), Env.is_test(), Env.allow_otc(), start_time, end_time)
+                ds.save_trade_info(self.position_id, asset, direction, self.modality, payout, Env.cash_amount(), str(round(status, 2)),result, Env.project_version(), Env.project_name(), Env.is_test(), Env.allow_otc(), start_time, end_time)
             else:
                 print(Message.txt_red("ERROR WHEN MAKE TRADE"))
                 ds.save_error_info('Trade error',self.position_id, Env.is_test())

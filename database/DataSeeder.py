@@ -8,14 +8,14 @@ class DataSeeder:
     def __init__():
         pass
 
-    def save_trade_info(pos_id, asset, direction, modality, payout, amount, profit,result, project_version, is_test, is_otc, started_at, finished_at):
+    def save_trade_info(pos_id, asset, direction, modality, payout, amount, profit,result, project_version, project_name, is_test, is_otc, started_at, finished_at):
         cnn = ConexaoMySQL()
         cnn.connect()
         # ---
         try:
             print(Message.txt_yellow("Saving trade info..."))
             query = "INSERT INTO trade (position_id, asset, direction, modality, payout, investment, profit, trade_result, project_version, is_test, is_otc, started_at, finished_at) " + \
-                    f"VALUES ('{pos_id}', '{asset}', '{direction}', '{modality}', '{payout}', '{amount}', '{profit}', '{result}','{project_version}', '{is_test}', '{is_otc}', '{started_at}', '{finished_at}');"
+                    f"VALUES ('{pos_id}', '{asset}', '{direction}', '{modality}', '{payout}', '{amount}', '{profit}', '{result}','{project_version}',{project_name}, '{is_test}', '{is_otc}', '{started_at}', '{finished_at}');"
             
             cnn.insert(query)
             cnn.close_connection()
