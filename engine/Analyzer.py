@@ -18,9 +18,11 @@ class Analyzer:
         chart = Chart(self.api)
         print(f"\nAnalizing: {Message.txt_yellow(asset)} | Payout: {payout}%")
         
-        #--------------------
         if(chart.is_acceptable_payout(payout)): 
-            if( chart.is_high_volatility_v3(asset) or chart.is_asset_chart_lateralized_v2(asset)) or chart.is_candles_small(asset) or chart.is_big_wick(asset):
+
+            non_compliant = [chart.is_high_volatility_v3(asset), chart.is_asset_chart_lateralized_v2(asset), chart.is_candles_small(asset), chart.is_big_wick(asset)]
+
+            if any(non_compliant):
                 return False
             else:
                 return True

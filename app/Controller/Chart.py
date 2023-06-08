@@ -65,76 +65,33 @@ class Chart:
     #------------------------------ 
     # Check if volatility is high
     #------------------------------ 
-    # def is_high_volatility(self, asset, expiration_time):
-    #     pair = asset
-    #     candles = self.api.get_candles(pair, expiration_time * 60, 50, time.time())
+    def analisar_volatilidade(self, asset):
+        # Obtendo os últimos 100 candles de 5 minutos
+        candles = self.api.get_candles(asset, 5, 100, time.time())
         
-    #     volatility = []
-    #     for candle in candles:
-    #         diff = candle['open'] - candle['close']
-    #         volatility.append(abs(diff))
-
-    #     average_volatility = sum(volatility) / len(volatility)
-    #     if average_volatility > 0.0015:
-    #         print(Message.alert("High volatility"))
-    #         return True # High
-    #     else:
-    #         print(Message.success("Low volatility"))
-    #         return False # Low
+        # Calculando a amplitude média diária (ATR)
+        atr = sum(candle['max'] - candle['min'] for candle in candles) / len(candles)
         
-    # (In test)
-    def is_high_volatility_v2(self, asset):
-        candle_period = Env.candle_period() * 60
-        # Obtem os ultimos 288 candles de 5 min, gera uma media de oscilação
-        # e compara os ultimos 20 candles com esta média para analisar possivel volatilidade
-        candles = self.api.get_candles(asset, candle_period, 1000, time.time()) # < 288 = 24h
-        print(f"Analized candles: {len(candles)} - M{Env.candle_period()}")
-        # Calculate average volatility of last 10 candles
-        volatility = []
-        for candle in candles:
-            diff = candle['open'] - candle['close']
-            volatility.append(abs(diff))
-        average_volatility = sum(volatility) / len(volatility)
-        # Calculate average volatility of last 20 candles
-        volatility = []
-        for candle in candles[-20:]:
-            diff = candle['open'] - candle['close']
-            volatility.append(abs(diff))
-        average_volatility_10 = sum(volatility) / len(volatility)
-        # Compare average volatilities and return result
-        if average_volatility_10 > average_volatility:
-            print(Message.alert("High volatility"))
-            return True # High
+        # Calculando as bandas de Bollinger com período 20 e desvio 2
+        periodo = 20
+        desvio = 2
+        
+        media_movel = sum(candle['close'] for candle in candles[-periodo:]) / periodo
+        desvio_padrao = (sum((candle['close'] - media_movel) ** 2 for candle in candles[-periodo:]) / periodo) ** 0.5
+        banda_superior = media_movel + desvio * desvio_padrao
+        banda_inferior = media_movel - desvio * desvio_padrao
+        
+        # Calculando a volatilidade histórica
+        variacoes_percentuais = [(candles[i]['close'] - candles[i-1]['close']) / candles[i-1]['close'] for i in range(1, len(candles))]
+        volatilidade_historica = sum(abs(variacao) for variacao in variacoes_percentuais) / (len(variacoes_percentuais) - 1)
+        
+        # Verificando se a volatilidade é alta ou baixa considerando as bandas de Bollinger
+        if volatilidade_historica > atr and candles[-1]['close'] > banda_superior and candles[-1]['close'] < banda_inferior:
+            return True
         else:
-            print(Message.success("Low volatility"))
-            return False # Low
-        
-        
-    # Ultiliza as bandas de bolliger para realizar a a analise de volatilidade
-    def is_high_volatility_v3(self, asset):
-        # Obtem os ultimos 8640 candles de 5 min (equivalente a 30 dias), calcula a volatilidade
-        candles = self.api.get_candles(asset, Env.candle_period() * 60, 1000, time.time())
-        print(f"Analized candles: {len(candles)} - M{Env.candle_period()}")
-        prices = np.array([candle['close'] for candle in candles])
-        # Configurando periodo de 20 e desvio de 2
-        upper, middle, lower = talib.BBANDS(prices, timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
-        volatility = upper - lower
-        average_volatility = np.mean(volatility)
+            return False
 
-        # Calcula a largura atual das bandas de Bollinger
-        current_price = candles[-1]['close']
-        current_upper, current_middle, current_lower = talib.BBANDS(prices[-21:], timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
-        current_width = current_upper[-1] - current_lower[-1]
-
-        # Compara a largura atual com a média de volatilidade
-        if current_width > average_volatility:
-            print(f"Volatility: {Message.txt_red('[ HIGH ]')}")
-            return True # High
-        else:
-            print(f"Volatility: {Message.txt_green('[ LOW ]')}")
-            return False # Low
-            
-
+   
     #-------------------------------------
     #  Check if the market is lateralized
     #-------------------------------------

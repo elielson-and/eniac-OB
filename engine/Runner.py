@@ -38,8 +38,10 @@ class Runner:
         # Runner
         while True:
             for asset in chart.get_all_available_assets():
+                # If elegible
                 if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
 
+                    # Do trade
                     trade_direction = direction.trade_direction(
                         analyzer.get_support_resistance(asset),
                         analyzer.analyze_mhi_strategy(asset),
@@ -50,6 +52,7 @@ class Runner:
                    
                 else:
                     print("Chart conditions: " + Message.txt_red("[ BAD ]") + "\n--------------")
+
 
             # -------
             os.system('cls||clear')
