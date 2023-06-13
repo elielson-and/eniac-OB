@@ -65,7 +65,7 @@ class Chart:
     #------------------------------ 
     # Check if volatility is high
     #------------------------------ 
-    def analisar_volatilidade(self, asset):
+    def is_high_volatility(self, asset):
         # Obtendo os últimos 100 candles de 5 minutos
         candles = self.api.get_candles(asset, 5, 100, time.time())
         
@@ -117,23 +117,7 @@ class Chart:
             # Caso não haja nenhum candle, retorna False
             return False
 
-    #Corrigir aqui
-    def is_asset_chart_lateralized_v2(self, asset) :
-        # get candles for the selected asset and period
-        candles = self.api.get_candles(asset, Env.candle_period() * 60, 10, time.time())
-        # calculate the mean of the close prices
-        close_prices = [candle["close"] for candle in candles]
-        close_prices_mean = sum(close_prices) / len(close_prices)
-        # check if the close prices are within a certain range
-        deviation = 0.01 # set the deviation to 1% for example
-        for close_price in close_prices:
-            if close_price < close_prices_mean * (1 - deviation) or close_price > close_prices_mean * (1 + deviation):
-                print(f"Laterialized: {Message.txt_red('[ YES ]')}")
-                return True
-        print(f"Laterialized: {Message.txt_green('[ NO ]')}")
-        return False
-
-
+   
 
     #------------------------------ 
     #  Get chart trend, up or down
@@ -254,5 +238,36 @@ class Chart:
 
         print("Candles normais")
         return False
+    
+    #---------------------------------------------------------
+    #  Verify if any candle in last 5 is must bigger than last 100
+    #---------------------------------------------------------
+    def has_big_candle(self, asset):
+        aceitable_wick_size = 1.9
+   
+        # Pega os últimos 10 candles
+        candles = self.api.get_candles(asset, Env.candle_period() * 60, 10, time.time())
+
+        # Verifica se há pelo menos 10 candles
+        if len(candles) < 10:
+            print("Não há candles suficientes!")
+            return
+
+        # Calcula o tamanho do corpo e do pavil de cada candle
+        sizes = []
+        for candle in candles:
+            body_size = abs(candle["open"] - candle["close"])
+            pavil_size = abs(candle["max"] - candle["min"]) - body_size
+            sizes.append((body_size, pavil_size))
+
+        # Calcula a média do pavil de todos os candles
+        pavil_avg = sum([pavil for _, pavil in sizes]) / 10
+
+        # Verifica se a média é maior do que 2x o tamanho do corpo
+        body_avg = sum([body for body, _ in sizes]) / 10
+        if pavil_avg > (aceitable_wick_size - 0.1) * body_avg:
+            return True
+        else:
+            return False
 
 
