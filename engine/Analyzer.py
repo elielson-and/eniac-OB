@@ -30,42 +30,63 @@ class Analyzer:
             return False
     # ======================================================================== 
     
-    # Strategy
+    # 
+    #
+    #
+    # Strategy area
+    #
+    #
+    #
 
     def get_support_resistance(self, asset):
-        candle_period = Env.candle_period() * 60
+        price_zone_range = 0.0010 #<- x1 To up and bottom
+        candles = self.api.get_candles(asset, Env.candle_period(), 80, time.time())
 
-        candles100 = self.api.get_candles(asset, candle_period, 100, time.time())
-        candles50 = self.api.get_candles(asset, candle_period, 50, time.time())
-        candles20 = self.api.get_candles(asset, candle_period, 20, time.time())
+        #opens = [candle['open'] for candle in candles]
+        closes = [candle['close'] for candle in candles]
+        highs = [candle['max'] for candle in candles]
+        lows = [candle['min'] for candle in candles]
 
-        close100 = np.array([float(candle["close"]) for candle in candles100])
-        close50 = np.array([float(candle["close"]) for candle in candles50])
-        close20 = np.array([float(candle["close"]) for candle in candles20])
+        # Mapeamento de topos e fundos
+        tops = []
+        bottoms = []
 
-        # Etapa 1 - Analisando 100 candles
-        support100 = np.min(close100)
-        resistance100 = np.max(close100)
+        for i in range(1, len(candles) - 1):
+            if highs[i] > highs[i-1] and highs[i] > highs[i+1]:
+                tops.append((i, highs[i]))
+            elif lows[i] < lows[i-1] and lows[i] < lows[i+1]:
+                bottoms.append((i, lows[i]))
 
-        # Etapa 2 - Analisando 50 candles
-        support50 = np.min(close50)
-        resistance50 = np.max(close50)
+        current_price = closes[-1]
 
-        if (support100 <= support50 + 0.0001 and support100 >= support50 - 0.0001):
-            return "support"
-        elif (resistance100 <= resistance50 + 0.0001 and resistance100 >= resistance50 - 0.0001):
-            return "resistance"
+        if len(tops) > 0 or len(bottoms) > 0:
+            top_zones = []
+            bottom_zones = []
 
-        # Etapa 3 - Analisando 20 candles
-        support20 = np.min(close20)
-        resistance20 = np.max(close20)
+            for top in tops:
+                top_diff = abs(current_price - top[1])
+                if top_diff <= price_zone_range:
+                    top_zones.append(top_diff)
 
-        if (support20 <= support50 + 0.0001 and support20 >= support50 - 0.0001):
-            return "support"
-        elif (resistance20 <= resistance50 + 0.0001 and resistance20 >= resistance50 - 0.0001):
-            return "resistance"
+            for bottom in bottoms:
+                bottom_diff = abs(current_price - bottom[1])
+                if bottom_diff <= price_zone_range:
+                    bottom_zones.append(bottom_diff)
 
-        return "nothing"
+            if top_zones or bottom_zones:
+                if top_zones and bottom_zones:
+                    top_sum = sum(top_zones)
+                    bottom_sum = sum(bottom_zones)
+                    if top_sum >= bottom_sum:
+                        return "resistance"
+                    else:
+                        return "support"
+                elif top_zones:
+                    return "resistance"
+                else:
+                    return "support"
+
+        return "No zone detected"
     
    
     def analyze_mhi_strategy(self, asset):
