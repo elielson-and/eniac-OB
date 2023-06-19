@@ -37,58 +37,78 @@ class Analyzer:
     #
     #
     #
-
-    def get_support_resistance(self, asset):
-        price_zone_range = 0.0010 #<- x1 To up and bottom
-        candles = self.api.get_candles(asset, Env.candle_period(), 80, time.time())
-
-        #opens = [candle['open'] for candle in candles]
-        closes = [candle['close'] for candle in candles]
-        highs = [candle['max'] for candle in candles]
-        lows = [candle['min'] for candle in candles]
-
-        # Mapeamento de topos e fundos
-        tops = []
-        bottoms = []
-
-        for i in range(1, len(candles) - 1):
-            if highs[i] > highs[i-1] and highs[i] > highs[i+1]:
-                tops.append((i, highs[i]))
-            elif lows[i] < lows[i-1] and lows[i] < lows[i+1]:
-                bottoms.append((i, lows[i]))
-
-        current_price = closes[-1]
-
-        if len(tops) > 0 or len(bottoms) > 0:
-            top_zones = []
-            bottom_zones = []
-
-            for top in tops:
-                top_diff = abs(current_price - top[1])
-                if top_diff <= price_zone_range:
-                    top_zones.append(top_diff)
-
-            for bottom in bottoms:
-                bottom_diff = abs(current_price - bottom[1])
-                if bottom_diff <= price_zone_range:
-                    bottom_zones.append(bottom_diff)
-
-            if top_zones or bottom_zones:
-                if top_zones and bottom_zones:
-                    top_sum = sum(top_zones)
-                    bottom_sum = sum(bottom_zones)
-                    if top_sum >= bottom_sum:
-                        return "resistance"
-                    else:
-                        return "support"
-                elif top_zones:
-                    return "resistance"
-                else:
-                    return "support"
-
-        return "No zone detected"
     
-   
+    #-----------------------------------------------------------------
+    #| Support and Resistance - Strategy
+    #-----------------------------------------------------------------
+    def get_support_resistance(self, asset):
+        qtd_candles = 50
+        zone_range = 0.0020
+        periods = [ 5, 15, 60]
+        counts = {'support': 0, 'resistance': 0}
+        # ----
+        for index, period in enumerate(periods):
+            candles = self.api.get_candles(asset, period, qtd_candles, time.time())
+            
+            #opens = [candle['open'] for candle in candles]
+            closes = [candle['close'] for candle in candles]
+            highs = [candle['max'] for candle in candles]
+            lows = [candle['min'] for candle in candles]
+        
+            # Mapeamento de topos e fundos
+            tops = []
+            bottoms = []
+        
+            for i in range(1, len(candles) - 1):
+                if highs[i] > highs[i-1] and highs[i] > highs[i+1]:
+                    tops.append((i, highs[i]))
+                elif lows[i] < lows[i-1] and lows[i] < lows[i+1]:
+                    bottoms.append((i, lows[i]))
+        
+            current_price = closes[-1]
+        
+            if len(tops) > 0 or len(bottoms) > 0:
+                top_zones = []
+                bottom_zones = []
+        
+                for top in tops:
+                    top_diff = abs(current_price - top[1])
+                    if top_diff <= zone_range:
+                        top_zones.append(top_diff)
+        
+                for bottom in bottoms:
+                    bottom_diff = abs(current_price - bottom[1])
+                    if bottom_diff <= zone_range:
+                        bottom_zones.append(bottom_diff)
+        
+                if top_zones or bottom_zones:
+                    if top_zones and bottom_zones:
+                        top_sum = sum(top_zones)
+                        bottom_sum = sum(bottom_zones)
+                        if top_sum >= bottom_sum:
+                            counts['resistance'] += 1
+                            continue
+                        else:
+                            counts['support'] += 1
+                            continue
+                    elif top_zones:
+                        counts['resistance'] += 1
+                        continue
+                    else:
+                        counts['support'] += 1
+                        continue
+        
+            # return "no zone found"
+
+        final_decision = max(counts, key=counts.get)
+        print(final_decision)
+        return final_decision
+    
+
+
+    #-----------------------------------------------------------------
+    #| MHI - Strategy
+    #-----------------------------------------------------------------
     def analyze_mhi_strategy(self, asset):
 
         candles = self.api.get_candles(asset, Env.candle_period() * 60, 500, time.time())  # Obtém os últimos 500 candles

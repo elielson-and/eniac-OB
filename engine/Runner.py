@@ -4,7 +4,6 @@ import os
 from iqoptionapi.stable_api import IQ_Option
 from app.Controller.Chart import Chart 
 from engine.Analyzer import Analyzer
-from engine.Asset import Asset
 from view.Messages import Message
 from engine.Trade import Trade
 from config.Environment.Environment import Environment as Env
