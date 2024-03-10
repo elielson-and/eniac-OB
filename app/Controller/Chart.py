@@ -11,7 +11,23 @@ class Chart:
     def __init__(self, api) -> None:
         self.api = api
 
+    def get_last_candle_data(self, ativo, timeframe):
+    
+            # Obtém o timestamp do último candle finalizado
+            candle_timestamp = self.api.get_server_timestamp() - timeframe * 60
 
+            # Obtém os dados do candle
+            candles = self.api.get_candles(ativo, timeframe * 60, 1, candle_timestamp)
+
+            # Retorna os dados do candle
+            if candles:
+                return candles[0]
+            else:
+                return None
+
+
+
+   
     #------------------------------ 
     # Get all available assets 
     #------------------------------ 

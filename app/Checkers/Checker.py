@@ -10,13 +10,13 @@ class Checker:
     def __init__(self):
         os.system('cls||clear')
         print(Message.info("Iniciando auto-teste de integridade do ambiente..."))
-        time.sleep(2)
+        # time.sleep(2)
         os.system('cls||clear')
-        self.check_project_files()
-        self.check_db_connection()
+        # self.check_project_files()
+        # self.check_db_connection()
         self.check_iqoption_api()
-        print("\n" + Message.success(" AUTO-TESTE FINALIZADO! ")) 
-        time.sleep(2)
+        # print("\n" + Message.success(" AUTO-TESTE FINALIZADO! ")) 
+        # time.sleep(2)
         os.system('cls||clear')
 
     def check_project_files(self):

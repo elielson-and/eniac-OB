@@ -23,38 +23,40 @@ class Runner:
         self.api.set_session(header,cookie)
         self.api.connect()
         self.api.change_balance("PRACTICE")
-        
-      
+
+
+   
 
     def start_application(self):
         #---Instances---
 
         chart = Chart(self.api)
-        analyzer = Analyzer(self.api)
-        trade = Trade(self.api)
-        direction = Direction(self.api)
+        print(chart.get_last_candle_data('EURGBP-OTC',5))
+        # analyzer = Analyzer(self.api)
+        # trade = Trade(self.api)
+        # direction = Direction(self.api)
 
-        # Runner
-        while True:
-            for asset in chart.get_all_available_assets():
-                # If elegible
-                if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
+        # # Runner
+        # while True:
+        #     for asset in chart.get_all_available_assets():
+        #         # If elegible
+        #         if(analyzer.is_asset_elegible_to_trade(asset, chart.get_payout(asset))):
 
-                    # Do trade
-                    trade_direction = direction.trade_direction(
-                        analyzer.get_support_resistance(asset),
-                        analyzer.analyze_mhi_strategy(asset),
-                        chart.get_chart_trend(asset)
-                    )
+        #             # Do trade
+        #             trade_direction = direction.trade_direction(
+        #                 analyzer.get_support_resistance(asset),
+        #                 analyzer.analyze_mhi_strategy(asset),
+        #                 chart.get_chart_trend(asset)
+        #             )
 
-                    trade.buy(asset, trade_direction, chart.get_payout(asset))
+        #             trade.buy(asset, trade_direction, chart.get_payout(asset))
                    
-                else:
-                    print("Chart conditions: " + Message.txt_red("[ BAD ]") + "\n--------------")
+        #         else:
+        #             print("Chart conditions: " + Message.txt_red("[ BAD ]") + "\n--------------")
 
 
-            # -------
-            os.system('cls||clear')
+        #     # -------
+        #     os.system('cls||clear')
             
             
             
